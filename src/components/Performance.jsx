@@ -92,7 +92,10 @@ const Performance = () => {
       <div className="content">
         <p className="description">
           Run graphics-intensive workflows with a responsiveness that keeps with your imagination. The M4 family of chips features a GPU with a second-generation hardware-accelerated ray tracing engine that renders images faster, so 
-            <span className="text-white">gaming feels more immersive and realistic than ever.
+            <span className="text-white">
+              {' '}
+              gaming feels more immersive and realistic than ever.
+              {' '}
             </span> 
           And Dynamic Caching optimizes fast on-chip memory to dramatically increase average GPU utilization - driving a huge performance boost for the most demanding pro apps and games.
         </p>
