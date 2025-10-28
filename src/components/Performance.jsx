@@ -5,7 +5,9 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 const Performance = () => {
-  const isMobile = useMediaQuery({ query: '(max-width: 1024px)'});
+  const isTablet = useMediaQuery({ query: '(max-width: 1024px) and (min-width: 600px)' });
+  const isMobile = useMediaQuery({ query: '(max-width: 599px)' });
+
   const sectionRef = useRef();
 
   useGSAP(() => {
@@ -26,7 +28,7 @@ const Performance = () => {
       }
     })
 
-    if(isMobile) return;
+
 
     const tl = gsap.timeline({
       defaults: {
@@ -44,26 +46,46 @@ const Performance = () => {
     });
 
     performanceImgPositions.forEach((pos) => {
-      if(pos.id === 'p5') return;
-
+      if (pos.id === 'p5') return;
+      let position = {};
+      if (isMobile && pos.mobile) position = pos.mobile;
+      else if (isTablet && pos.tablet) position = pos.tablet;
+      else if (pos.desktop) position = pos.desktop;
       const toVars = {};
-
-      if(pos.left !== undefined) toVars.left = `${pos.left}%`;
-      if(pos.right !== undefined) toVars.right = `${pos.right}%`;
-      if(pos.bottom !== undefined) toVars.bottom = `${pos.bottom}%`;
-      if(pos.transform !== undefined) toVars.transform = `${pos.transform}%`;
-
+      if (position.left !== undefined) toVars.left = `${position.left}%`;
+      if (position.right !== undefined) toVars.right = `${position.right}%`;
+      if (position.bottom !== undefined) toVars.bottom = `${position.bottom}%`;
+      if (position.transform !== undefined) toVars.transform = position.transform;
       tl.to(`.${pos.id}`, toVars, 0);
-    })
-  }, { scope: sectionRef, dependencies: [isMobile] });
+    });
+  }, { scope: sectionRef, dependencies: [isMobile, isTablet] });
+
+  // Helper to get the correct position for each device
+  const getImgStyle = (id) => {
+    const pos = performanceImgPositions.find(p => p.id === id);
+    if (!pos) return {};
+    let position = {};
+    if (isMobile && pos.mobile) position = pos.mobile;
+    else if (isTablet && pos.tablet) position = pos.tablet;
+    else if (pos.desktop) position = pos.desktop;
+    // Convert to style object
+    const style = {};
+    if (position.left !== undefined) style.left = `${position.left}%`;
+    if (position.right !== undefined) style.right = `${position.right}%`;
+    if (position.bottom !== undefined) style.bottom = `${position.bottom}%`;
+    if (position.top !== undefined) style.top = `${position.top}%`;
+    if (position.transform !== undefined) style.transform = position.transform;
+    style.position = 'absolute';
+    return style;
+  };
 
   return (
     <section id='performance' ref={sectionRef}>
       <h2>Next-level graphics performance. Game on.</h2>
 
-      <div className="wrapper">
+      <div className="wrapper" style={{ position: 'relative' }}>
         {performanceImages.map(({ id, src }) => (
-          <img key={id} src={src} alt={id} className={id} />
+          <img key={id} src={src} alt={id} className={id} style={getImgStyle(id)} />
         ))}
       </div>
 
